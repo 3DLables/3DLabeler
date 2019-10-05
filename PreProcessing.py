@@ -16,6 +16,6 @@ def tag_parser(string):
     return df
 
         
-test = tag_parser("../mouse_skulls/data/MouseSkulls/475_landmarks.tag")
+# test = tag_parser("../mouse_skulls/data/MouseSkulls/475_landmarks.tag")
 
-print(test)
+# print(test)
