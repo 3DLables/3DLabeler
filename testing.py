@@ -37,3 +37,12 @@ print(test.voxels.shape)
 # # %%
 
 #%%
+# from scipy import ndimage, misc
+# import matplotlib.pyplot as plt
+
+# array = test.voxels
+# array_zoom = ndimage.zoom(array, 0.01)
+
+test.scale(128)
+print(test.point_positon)
+print(test.voxels.shape)

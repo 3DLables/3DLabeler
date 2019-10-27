@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import ndimage
 
 class Image:
     '''the image class for 3d labels'''
@@ -39,8 +40,12 @@ class Image:
 
         
 
-    def scale(self, size):
-        # TODO
+    def scale(self, size=128):
+        # TODO This needs to have the ability not just scale in one direction/factor
+        scale_factor = size / max(self.voxels.shape)
+        self.voxels = ndimage.zoom(self.voxels, scale_factor)
+        self.point_positon = self.point_positon * scale_factor
+        self.voxel_size = False # To ignore this
         pass
 
 def ratio(dims):
