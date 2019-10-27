@@ -7,11 +7,7 @@ class Image:
         self.voxels = voxels
         self.voxel_size = voxel_size
         self.point_positon = point_positon / voxel_size
-        self.dimensions = {}
-        self.dimensions['x'] = self.voxels.shape[0]
-        self.dimensions['y'] = self.voxels.shape[1]
-        self.dimensions['z'] = self.voxels.shape[2]
-        # Todo add padding and scalling
+
 
     def pad(self, target_dims):
         # TODO 
@@ -22,11 +18,14 @@ class Image:
     def cube(self):
         """Returns a cube image with all dimensions equal to the longest."""
 
-        max_dim = max(self.dimensions, key = self.dimensions.get)
-        max_dim = self.dimensions[max_dim]
-        x_target = (max_dim - self.dimensions['x']) / 2
-        y_target = (max_dim - self.dimensions['y']) / 2
-        z_target = (max_dim - self.dimensions['z']) / 2
+        # max_dim = max(self.dimensions, key = self.dimensions.get)
+        # max_dim = self.dimensions[max_dim]
+        dims = self.voxels.shape
+        max_dim = max(dims)
+        
+        x_target = (max_dim - dims[0]) / 2
+        y_target = (max_dim - dims[1]) / 2
+        z_target = (max_dim - dims[2]) / 2
 
         self.voxels = np.pad(self.voxels,
                             ((int(np.ceil(x_target)), int(np.floor(x_target))),
