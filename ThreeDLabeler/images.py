@@ -32,12 +32,12 @@ class Image:
                              (int(np.ceil(z_target)), int(np.floor(z_target)))),
                             'constant',
                             constant_values=(0))
-        self.point_positon = self.point_positon + [np.ceil(x_target),
+        self.point_positon = self.point_positon + [np.ceil(z_target),
                                                      np.ceil(y_target),
-                                                     np.ceil(z_target)]
+                                                     np.ceil(x_target)]
+        # TODO Fix this or fix the tag parser to return better x and z cordinates
 
         
-
     def scale(self, size=128):
         # TODO This needs to have the ability not just scale in one direction/factor
         scale_factor = size / max(self.voxels.shape)
