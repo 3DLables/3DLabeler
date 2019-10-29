@@ -19,8 +19,6 @@ class Image:
     def cube(self):
         """Returns a cube image with all dimensions equal to the longest."""
 
-        # max_dim = max(self.dimensions, key = self.dimensions.get)
-        # max_dim = self.dimensions[max_dim]
         dims = self.voxels.shape
         max_dim = max(dims)
         
