@@ -2,18 +2,17 @@ import numpy as np
 from scipy import ndimage
 
 class Image:
-    '''the image class for 3d labels'''
+    """Image class for annotating 3D scans.
+    Arguments: 
+    voxels: a 3D numpy array
+    voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
+    point_position: the position in 3D of each point of interest. See tag_parser for more info
+    """
 
     def __init__(self, voxels, voxel_size, point_positon):
         self.voxels = voxels
         self.voxel_size = voxel_size
         self.point_positon = point_positon / voxel_size
-
-
-    def pad(self, target_dims):
-        # TODO 
-        
-        pass
 
 
     def cube(self):
@@ -35,22 +34,18 @@ class Image:
         self.point_positon = self.point_positon + [np.ceil(z_target),
                                                      np.ceil(y_target),
                                                      np.ceil(x_target)]
-        # TODO Fix this or fix the tag parser to return better x and z cordinates
+
 
         
     def scale(self, size=128):
-        # TODO This needs to have the ability not just scale in one direction/factor
+       """Scales an cubic image to a certain number of voxels.
+       This function relies on numpy's ndimage.zoom function"""
         scale_factor = size / max(self.voxels.shape)
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
         self.point_positon = self.point_positon * scale_factor
         self.voxel_size = False # To ignore this
         pass
 
-def ratio(dims):
-    """Calculates the ratio of n numbers"""
-    dims = np.asarray(dims)
-    total = dims.sum()
-    
-    return dims/total
-
+# TODO Add posibility to not just cube an image
+# TODO Add Storeage/writing functionality
 
