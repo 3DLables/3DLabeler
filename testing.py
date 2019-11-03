@@ -46,3 +46,8 @@ print(test.voxels.shape)
 test.scale(128)
 print(test.point_positon)
 print(test.voxels.shape)
+
+my_array = np.loadtxt('iris_numbers.csv',delimiter=",", skiprows=1)
+
+tag_parse
+
