@@ -25,8 +25,8 @@ def mri_point_plot(img, points, vcol=1):
         plt.imshow(im)
         plot_cols = np.array([0, 1, 2])
         plot_cols = plot_cols[plot_cols != vcol]
-        plt.plot(points[i, plot_cols[0]], points[i, plot_cols[1]], 'ro')
-        # plt.plot(df.loc[i, dim_cols[0]], df.loc[i, dim_cols[1]], 'ro')
+        plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
+
     plt.show()
 
 
