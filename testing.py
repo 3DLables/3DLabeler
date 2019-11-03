@@ -11,7 +11,7 @@ data = img.get_data()
 
 #%%
 from ThreeDLabeler import images
-from ThreeDLabeler.PreProcessing import tag_parser
+from ThreeDLabeler.preprocessing import tag_parser
 # importlib.reload(ThreeDLabeler.images)
 tags = tag_parser('MouseSkullData/475_landmarks.tag')
 
