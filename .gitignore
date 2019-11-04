@@ -108,3 +108,7 @@ venv.bak/
 *.tag
 *.mnc
 *.nii
+
+# for passwords
+secrets.py
+client_secrets.json

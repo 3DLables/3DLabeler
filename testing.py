@@ -11,7 +11,7 @@ data = img.get_data()
 
 #%%
 from ThreeDLabeler import images
-from ThreeDLabeler.PreProcessing import tag_parser
+from ThreeDLabeler.preprocessing import tag_parser
 # importlib.reload(ThreeDLabeler.images)
 tags = tag_parser('MouseSkullData/475_landmarks.tag')
 
@@ -46,3 +46,8 @@ print(test.voxels.shape)
 test.scale(128)
 print(test.point_positon)
 print(test.voxels.shape)
+
+my_array = np.loadtxt('iris_numbers.csv',delimiter=",", skiprows=1)
+
+tag_parse
+
