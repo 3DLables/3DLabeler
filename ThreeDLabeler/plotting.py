@@ -15,11 +15,11 @@ def mri_point_plot(img, points, vcol=1):
     for i in range(points.shape[0]):
         im_slice = int(np.round(points[i, vcol]))
         if vcol == 0:
-            im = img[im_slice, :, :]
+            im = img[:, :, im_slice]
         elif vcol == 1:
             im = img[:, im_slice, :]
         else:
-            im = img[:, :, im_slice]
+            im = img[im_slice, :, :]
         ax.append( fig.add_subplot(rows, columns, i+1))
         ax[-1].set_title("Image depth: "+str(im_slice))  # set title
         plt.imshow(im)
