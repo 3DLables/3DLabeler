@@ -38,7 +38,7 @@ class Image:
 
         
     def scale(self, size=128):
-       """Scales an cubic image to a certain number of voxels.
+        """Scales an cubic image to a certain number of voxels.
        This function relies on numpy's ndimage.zoom function"""
         scale_factor = size / max(self.voxels.shape)
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
