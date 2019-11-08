@@ -9,10 +9,10 @@ class Image:
     point_position: the position in 3D of each point of interest. See tag_parser for more info
     """
 
-    def __init__(self, voxels, voxel_size, point_positon):
+    def __init__(self, voxels, voxel_size, point_position):
         self.voxels = voxels
         self.voxel_size = voxel_size
-        self.point_positon = point_positon / voxel_size
+        self.point_position = point_position / voxel_size
 
 
     def cube(self):
@@ -31,7 +31,7 @@ class Image:
                              (int(np.ceil(z_target)), int(np.floor(z_target)))),
                             'constant',
                             constant_values=(0))
-        self.point_positon = self.point_positon + [np.ceil(z_target),
+        self.point_position = self.point_position + [np.ceil(z_target),
                                                      np.ceil(y_target),
                                                      np.ceil(x_target)]
 
@@ -42,7 +42,7 @@ class Image:
        This function relies on numpy's ndimage.zoom function"""
        scale_factor = size / max(self.voxels.shape)
        self.voxels = ndimage.zoom(self.voxels, scale_factor)
-       self.point_positon = self.point_positon * scale_factor
+       self.point_position = self.point_position * scale_factor
        self.voxel_size = False # To ignore this
        pass
 
