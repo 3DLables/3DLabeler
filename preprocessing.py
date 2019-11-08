@@ -14,18 +14,26 @@ import os
 
 # Cloud interface
 from google.cloud import storage
-credential_path = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
+
+credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
-GCP_PROJECT_NAME = 'mouse-labeler'
-GCP_BUCKET_NAME =  'skull-images'
+GCP_PROJECT_NAME: str = 'mouse-labeler'
+GCP_BUCKET_NAME: str =  'skull-images'
 
-RAW_IMAGE_DIRECTORY = '/Users/michaeldac/Code/CUNY/698/Skulls'
-PROCESSED_IMAGE_DIRECTORY = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls'
-
-skulls_folder = os.listdir(RAW_IMAGE_DIRECTORY)
+RAW_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/Skulls'
+PROCESSED_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls/'
 
 def main():
+    """
+    The purpose of this function is to process 3d MRI images of mouse skulls,
+    package the files and send to google cloud storage for a machine learning model
+    to fetch and predict facial keypoints on.
+
+    The .mnc files are the image arrays and the .tag files are the corresponding
+    facial keypoints.
+    """
+    skulls_folder = os.listdir(RAW_IMAGE_DIRECTORY)
 
     # fetch and sort the .mnc and .tag files
     mnc_files = [f for f in skulls_folder if 'mnc' in f]
@@ -36,8 +44,10 @@ def main():
     tag_files.sort()
     mnc_names.sort()
 
-    package_to_npy(skulls_folder, mnc_files, tag_files, mnc_names)
+    # Package ndarrays as tuples inside npy file
+    package_to_npy(RAW_IMAGE_DIRECTORY, mnc_files, tag_files, mnc_names)
 
+    # Push the npy files to GCP Cloud Storage
     upload_to_gcp(PROCESSED_IMAGE_DIRECTORY, GCP_PROJECT_NAME, GCP_BUCKET_NAME)
    
 
@@ -45,9 +55,10 @@ def main():
 
 
 
-def package_to_npy(folder_list, mnc_files, tag_files, mnc_names):
+def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: list):
     """
-    INPUT:  List of .mnc files, 
+    INPUT:  Path where raw image files exist,
+            List of .mnc files, 
             List of corresponding .tag files, 
             List of .mnc prefix names
     
@@ -63,23 +74,38 @@ def package_to_npy(folder_list, mnc_files, tag_files, mnc_names):
     
     count = 0
     for i in tqdm(range(len(mnc_files))):
-        img = nib.load(f'{folder_list}/{mnc_files[i]}')
-        tag = tag_parser(f'{folder_list}/{tag_files[i]}')
+        img = nib.load(f'{file_path}/{mnc_files[i]}')
+        tag = tag_parser(f'{file_path}/{tag_files[i]}')
         im = Image(img.get_data(), (0.035, 0.035, 0.035), tag)
         im.cube().scale(128)
         npy_file = (im.voxels, im.point_position)
         np.save(f'{PROCESSED_IMAGE_DIRECTORY}/{mnc_names[i]}.npy', npy_file)
         count += 1
     
-    print('f{count} .mnc/.tag file pairs have been saved as .npy files')
+    print(f'{count} .mnc/.tag file pairs have been saved as .npy files')
 
 
-def upload_to_gcp(path_to_files, project_name, bucket_name ):
+def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
+    """
+    INPUT:  Path where processed images exist, 
+            GCP project name, 
+            GCP bucket name
+    
+    The .mnc file is loaded 
+    The .tag file is parsed and converted to an ndarray via tag_parser()
+    Image class is instantiated with the .mnc and .tag file and cubes
+    any images shaped as rectangular prisms and scales down image 
+    resolution to 128x128x128.
+    
+    OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file 
+    and saved to disk locally.
+    """
+    print('Starting upload to Google Cloud Storage project')
     storage_client = storage.Client(project=project_name)
     bucket = storage_client.get_bucket(bucket_name)
     
     count = 0
-    for filename in os.listdir(path_to_files):
+    for filename in tqdm(os.listdir(path_to_files)):
         blob = bucket.blob(filename)
         blob.upload_from_filename(path_to_files + filename)
         print(f'{filename} successfully uploaded to {bucket_name} bucket.')
@@ -88,7 +114,7 @@ def upload_to_gcp(path_to_files, project_name, bucket_name ):
     print(f'{count} blobs were uploaded to Project:{project_name}, Bucket:{bucket_name}')
 
 
-def tag_parser(file_path):
+def tag_parser(file_path: str):
     """parses .tag files by taking the file path. 
     Functionality is currently limited to only certain tag files and is not guaranteeded 
     to work everywhere"""
@@ -181,5 +207,5 @@ class Image:
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
