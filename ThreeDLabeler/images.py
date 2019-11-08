@@ -35,7 +35,7 @@ class Image:
                                                      np.ceil(y_target),
                                                      np.ceil(x_target)]
 
-
+        return(self)
         
     def scale(self, size=128):
         """Scales an cubic image to a certain number of voxels.
@@ -44,7 +44,8 @@ class Image:
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
         self.point_position = self.point_position * scale_factor
         self.voxel_size = False # To ignore this
-        pass
+        
+        return(self)
 
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
