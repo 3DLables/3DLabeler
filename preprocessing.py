@@ -13,18 +13,10 @@ from io import StringIO
 import time
 import os
 
-
 # Cloud interface
 from google.cloud import storage
 
-credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
-GCP_PROJECT_NAME: str = 'mouse-labeler'
-GCP_BUCKET_NAME: str =  'skull-images'
-
-RAW_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/Skulls'
-PROCESSED_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls/'
 
 def main():
     """
@@ -35,6 +27,16 @@ def main():
     The .mnc files are the image arrays and the .tag files are the corresponding
     facial keypoints.
     """
+
+    credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
+
+    GCP_PROJECT_NAME: str = 'mouse-labeler'
+    GCP_BUCKET_NAME: str =  'skull-images'
+
+    RAW_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/Skulls'
+    PROCESSED_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls/'
+    
     skulls_folder = os.listdir(RAW_IMAGE_DIRECTORY)
 
     # fetch and sort the .mnc and .tag files
@@ -48,7 +50,9 @@ def main():
 
     # Process and package ndarrays as tuples inside npy file
     package_to_npy(RAW_IMAGE_DIRECTORY, mnc_files, tag_files, mnc_names)
+    
     print('\n' * 5)
+
     # Push the npy files to GCP Cloud Storage
     upload_to_gcp(PROCESSED_IMAGE_DIRECTORY, GCP_PROJECT_NAME, GCP_BUCKET_NAME)
    
@@ -190,6 +194,7 @@ class Image:
                              (int(np.ceil(z_target)), int(np.floor(z_target)))),
                             'constant',
                             constant_values=(0))
+
         self.point_position = self.point_position + [np.ceil(z_target),
                                                      np.ceil(y_target),
                                                      np.ceil(x_target)]
