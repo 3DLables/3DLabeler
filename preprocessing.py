@@ -10,7 +10,9 @@ from scipy import ndimage
 # Base operations
 from tqdm import tqdm
 from io import StringIO
+import time
 import os
+
 
 # Cloud interface
 from google.cloud import storage
@@ -44,9 +46,9 @@ def main():
     tag_files.sort()
     mnc_names.sort()
 
-    # Package ndarrays as tuples inside npy file
+    # Process and package ndarrays as tuples inside npy file
     package_to_npy(RAW_IMAGE_DIRECTORY, mnc_files, tag_files, mnc_names)
-
+    print('\n' * 5)
     # Push the npy files to GCP Cloud Storage
     upload_to_gcp(PROCESSED_IMAGE_DIRECTORY, GCP_PROJECT_NAME, GCP_BUCKET_NAME)
    
@@ -71,7 +73,7 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
     OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file 
     and saved to disk locally.
     """
-    
+    print('Starting image processing...')
     count = 0
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(f'{file_path}/{mnc_files[i]}')
@@ -82,7 +84,7 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
         np.save(f'{PROCESSED_IMAGE_DIRECTORY}/{mnc_names[i]}.npy', npy_file)
         count += 1
     
-    print(f'{count} .mnc/.tag file pairs have been saved as .npy files')
+    print(f'{count} .mnc/.tag file pairs have been processed and saved as .npy files')
 
 
 def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
@@ -91,14 +93,10 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
             GCP project name, 
             GCP bucket name
     
-    The .mnc file is loaded 
-    The .tag file is parsed and converted to an ndarray via tag_parser()
-    Image class is instantiated with the .mnc and .tag file and cubes
-    any images shaped as rectangular prisms and scales down image 
-    resolution to 128x128x128.
+    GCP client id'd and blob located.
+    Loop through folder of processed images and upload one at a time. 
     
-    OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file 
-    and saved to disk locally.
+    OUTPUT: Returns None. Processed image files are uploaded to GCP Cloud Storage
     """
     print('Starting upload to Google Cloud Storage project')
     storage_client = storage.Client(project=project_name)
@@ -108,16 +106,18 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
     for filename in tqdm(os.listdir(path_to_files)):
         blob = bucket.blob(filename)
         blob.upload_from_filename(path_to_files + filename)
-        print(f'{filename} successfully uploaded to {bucket_name} bucket.')
+        #print(f'{filename} successfully uploaded to {bucket_name} bucket.')
         count += 1
 
     print(f'{count} blobs were uploaded to Project:{project_name}, Bucket:{bucket_name}')
 
 
 def tag_parser(file_path: str):
-    """parses .tag files by taking the file path. 
+    """
+    parses .tag files by taking the file path. 
     Functionality is currently limited to only certain tag files and is not guaranteeded 
-    to work everywhere"""
+    to work everywhere
+    """
     with open(file_path) as f:
         t = f.read()
         t = t.split("Points =\n")[1]
@@ -130,7 +130,8 @@ def tag_parser(file_path: str):
         return np.genfromtxt(t, delimiter=' ')
 
 def mri_point_plot(img, points, vcol=1):
-    """Graphs an points. pt_cols is used to set the cols to iterate 
+    """
+    Graphs an points. pt_cols is used to set the cols to iterate 
     over (different views)
     """
     
@@ -159,7 +160,8 @@ def mri_point_plot(img, points, vcol=1):
 
 
 class Image:
-    """Image class for annotating 3D scans.
+    """
+    Image class for annotating 3D scans.
     Arguments: 
     voxels: a 3D numpy array
     voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
@@ -208,4 +210,6 @@ class Image:
 # TODO Add Storeage/writing functionality
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print('\n', f'--- Process time: {(time.time() - start_time)} seconds ---') 
