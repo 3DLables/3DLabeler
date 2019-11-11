@@ -112,3 +112,5 @@ venv.bak/
 # for passwords
 secrets.py
 client_secrets.json
+./MouseskullData
+.DS_Store
