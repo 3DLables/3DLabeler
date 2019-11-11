@@ -4,16 +4,17 @@ from tqdm import tqdm
 # Cloud interface
 from google.cloud import storage
 
+credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
+
+GCP_PROJECT_NAME: str = 'mouse-labeler'
+GCP_BUCKET_NAME: str =  'skull-images'
+
+DOWNLOADED_IMAGE_DIRECTORY: str = "/Users/michaeldac/Code/CUNY/698/Downloaded_Skulls/"
 
 
 def main():
-    credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
-    GCP_PROJECT_NAME: str = 'mouse-labeler'
-    GCP_BUCKET_NAME: str =  'skull-images'
-
-    DOWNLOADED_IMAGE_DIRECTORY: str = "/Users/michaeldac/Code/CUNY/698/Downloaded_Skulls/"
 
     if not os.path.exists(DOWNLOADED_IMAGE_DIRECTORY):
         os.makedirs(DOWNLOADED_IMAGE_DIRECTORY)

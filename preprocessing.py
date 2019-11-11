@@ -16,7 +16,17 @@ import os
 # Cloud interface
 from google.cloud import storage
 
+credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
+GCP_PROJECT_NAME: str = 'mouse-labeler'
+GCP_BUCKET_NAME: str =  'skull-images'
+
+# Location of the raw images
+RAW_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/Skulls'
+
+# Where you want the processed images to go
+PROCESSED_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls'
 
 def main():
     """
@@ -28,15 +38,8 @@ def main():
     facial keypoints.
     """
 
-    credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
-    GCP_PROJECT_NAME: str = 'mouse-labeler'
-    GCP_BUCKET_NAME: str =  'skull-images'
 
-    RAW_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/Skulls'
-    PROCESSED_IMAGE_DIRECTORY: str = '/Users/michaeldac/Code/CUNY/698/ReducedSkulls/'
-    
     skulls_folder = os.listdir(RAW_IMAGE_DIRECTORY)
 
     # fetch and sort the .mnc and .tag files
@@ -70,7 +73,7 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
     
     The .mnc file is loaded 
     The .tag file is parsed and converted to an ndarray via tag_parser()
-    Image class is instantiated with the .mnc and .tag file and cubes
+    Processor class is instantiated with the .mnc and .tag file and cubes
     any images shaped as rectangular prisms and scales down image 
     resolution to 128x128x128.
     
@@ -82,7 +85,7 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(f'{file_path}/{mnc_files[i]}')
         tag = tag_parser(f'{file_path}/{tag_files[i]}')
-        im = Image(img.get_data(), (0.035, 0.035, 0.035), tag)
+        im = Processor(img.get_data(), (0.035, 0.035, 0.035), tag)
         im.cube().scale(128)
         npy_file = (im.voxels, im.point_position)
         np.save(f'{PROCESSED_IMAGE_DIRECTORY}/{mnc_names[i]}.npy', npy_file)
@@ -109,7 +112,7 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
     count = 0
     for filename in tqdm(os.listdir(path_to_files)):
         blob = bucket.blob(filename)
-        blob.upload_from_filename(path_to_files + filename)
+        blob.upload_from_filename(f'{path_to_files}/{filename})
         #print(f'{filename} successfully uploaded to {bucket_name} bucket.')
         count += 1
 
@@ -163,9 +166,9 @@ def mri_point_plot(img, points, vcol=1):
     plt.show()
 
 
-class Image:
+class Processor:
     """
-    Image class for annotating 3D scans.
+    Processor class for annotating 3D scans.
     Arguments: 
     voxels: a 3D numpy array
     voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
@@ -202,8 +205,10 @@ class Image:
         return(self)
         
     def scale(self, size=128):
-        """Scales an cubic image to a certain number of voxels.
-       This function relies on numpy's ndimage.zoom function"""
+        """
+        Scales an cubic image to a certain number of voxels.
+        This function relies on numpy's ndimage.zoom function
+        """
         scale_factor = size / max(self.voxels.shape)
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
         self.point_position = self.point_position * scale_factor
