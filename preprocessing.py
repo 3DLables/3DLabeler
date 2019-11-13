@@ -112,8 +112,8 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
     count = 0
     for filename in tqdm(os.listdir(path_to_files)):
         blob = bucket.blob(filename)
-        blob.upload_from_filename(f'{path_to_files}/{filename})
-        #print(f'{filename} successfully uploaded to {bucket_name} bucket.')
+        blob.upload_from_filename(f'{path_to_files}/{filename}')
+        # print(f'{filename} successfully uploaded to {bucket_name} bucket.')
         count += 1
 
     print(f'{count} blobs were uploaded to Project:{project_name}, Bucket:{bucket_name}')
