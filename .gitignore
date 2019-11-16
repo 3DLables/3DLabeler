@@ -114,3 +114,4 @@ secrets.py
 client_secrets.json
 ./MouseskullData
 .DS_Store
+*.npy
