@@ -1,4 +1,5 @@
 import preprocessing as pp 
+<<<<<<< HEAD
 import os
 import numpy as np 
 SKULL_DIR = 'MouseSkullData/'
@@ -50,3 +51,5 @@ print('done test')
 # import nilearn as ni
 # from nilearn import plotting
 # ni.plotting.plot_glass_brain("MouseSkullData/test.nii")   
+=======
+>>>>>>> 7f29cf89883f4133747986efe059675cc8ad824d
