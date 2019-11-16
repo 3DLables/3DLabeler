@@ -14,7 +14,7 @@ import time
 import os
 
 # Cloud interface
-from google.cloud import storage
+# from google.cloud import storage
 
 credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
@@ -85,10 +85,10 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(f'{file_path}/{mnc_files[i]}')
         tag = tag_parser(f'{file_path}/{tag_files[i]}')
-        im = Processor(img.get_data(), (0.035, 0.035, 0.035), tag)
+        im = Processor(img.get_data(), img.header.get_zooms(), tag)
         im.cube().scale(128)
         npy_file = (im.voxels, im.point_position)
-        np.save(f'{PROCESSED_IMAGE_DIRECTORY}/{mnc_names[i]}.npy', npy_file)
+        np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
         count += 1
     
     print(f'{count} .mnc/.tag file pairs have been processed and saved as .npy files')
