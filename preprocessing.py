@@ -14,7 +14,7 @@ import time
 import os
 
 # Cloud interface
-from google.cloud import storage
+#from google.cloud import storage
 
 credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
@@ -106,8 +106,8 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
     OUTPUT: Returns None. Processed image files are uploaded to GCP Cloud Storage
     """
     print('Starting upload to Google Cloud Storage project')
-    storage_client = storage.Client(project=project_name)
-    bucket = storage_client.get_bucket(bucket_name)
+    #storage_client = storage.Client(project=project_name)
+    #bucket = storage_client.get_bucket(bucket_name)
     
     count = 0
     for filename in tqdm(os.listdir(path_to_files)):
@@ -136,34 +136,6 @@ def tag_parser(file_path: str):
 
         return np.genfromtxt(t, delimiter=' ')
 
-def mri_point_plot(img, points, vcol=1):
-    """
-    Graphs an points. pt_cols is used to set the cols to iterate 
-    over (different views)
-    """
-    
-    ax = []
-    fig = plt.figure(figsize=(9, 8))
-    # TODO make this setable in the function call
-    columns = 3
-    rows = 2
-
-    for i in range(points.shape[0]):
-        im_slice = int(np.round(points[i, vcol]))
-        if vcol == 0:
-            im = img[im_slice, :, :]
-        elif vcol == 1:
-            im = img[:, im_slice, :]
-        else:
-            im = img[:, :, im_slice]
-        ax.append( fig.add_subplot(rows, columns, i+1))
-        ax[-1].set_title("Image depth: "+str(im_slice))  # set title
-        plt.imshow(im)
-        plot_cols = np.array([0, 1, 2])
-        plot_cols = plot_cols[plot_cols != vcol]
-        plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
-
-    plt.show()
 
 
 class Processor:
@@ -215,6 +187,36 @@ class Processor:
         self.voxel_size = False # To ignore this
         
         return(self)
+
+    def mri_point_plot(vcol=1):
+        """
+        Graphs an points. pt_cols is used to set the cols to iterate 
+        over (different views)
+        """
+        img = self.voxels
+        points = self.point_position 
+        ax = []
+        fig = plt.figure(figsize=(9, 8))
+        # TODO make this setable in the function call
+        columns = 3
+        rows = 2
+
+        for i in range(points.shape[0]):
+            im_slice = int(np.round(points[i, vcol]))
+            if vcol == 0:
+                im = img[im_slice, :, :]
+            elif vcol == 1:
+                im = img[:, im_slice, :]
+            else:
+                im = img[:, :, im_slice]
+            ax.append( fig.add_subplot(rows, columns, i+1))
+            ax[-1].set_title("Image depth: "+str(im_slice))  # set title
+            plt.imshow(im)
+            plot_cols = np.array([0, 1, 2])
+            plot_cols = plot_cols[plot_cols != vcol]
+            plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
+
+        plt.show()
 
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
