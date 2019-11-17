@@ -4,14 +4,13 @@ import matplotlib.pyplot as plt
 
 
 class Image:
-        """
+    """
     Processor class for annotating 3D scans.
     Arguments: 
     voxels: a 3D numpy array
     voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
     point_position: the position in 3D of each point of interest. See tag_parser for more info
     """
-
     def __init__(self, voxels, voxel_size, point_position):
         self.voxels = voxels
         self.voxel_size = voxel_size
