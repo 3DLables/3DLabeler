@@ -40,7 +40,7 @@ class Image:
 
         
     def scale(self, size=128):
-<<<<<<< HEAD
+
        """Scales an cubic image to a certain number of voxels.
        This function relies on numpy's ndimage.zoom function"""
        scale_factor = size / max(self.voxels.shape)
@@ -48,15 +48,6 @@ class Image:
        self.point_position = self.point_position * scale_factor
        self.voxel_size = False # To ignore this
        pass
-=======
-        """Scales an cubic image to a certain number of voxels.
-        This function relies on numpy's ndimage.zoom function"""
-        scale_factor = size / max(self.voxels.shape)
-        self.voxels = ndimage.zoom(self.voxels, scale_factor)
-        self.point_position = self.point_position * scale_factor
-        self.voxel_size = False # To ignore this
-        pass
-
 
     def mri_point_plot(self, vcol=1):
         """Graphs an points. pt_cols is used to set the cols to iterate 
@@ -87,7 +78,7 @@ class Image:
             plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
 
         plt.show()
->>>>>>> dfd8f2df14077538e4179f8cceaa2341e1df2198
+
 
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
