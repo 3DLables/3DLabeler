@@ -33,7 +33,7 @@ processed_files = np.isin(tag_test, existing )
 mnc_files = mnc_files[~processed_files]
 tag_files = tag_files[~processed_files]
 file_names = file_names[~processed_files]
-pp.package_to_npy(SKULL_DIR, mnc_files, tag_files, file_names)
+pp.package_to_npy(SKULL_DIR, mnc_files[3:], tag_files[3:], file_names[3:])
 
 
 
