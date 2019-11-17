@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 
 class Image:
-    """Image class for annotating 3D scans.
+        """
+    Processor class for annotating 3D scans.
     Arguments: 
     voxels: a 3D numpy array
     voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
@@ -33,29 +34,32 @@ class Image:
                              (int(np.ceil(z_target)), int(np.floor(z_target)))),
                             'constant',
                             constant_values=(0))
+
         self.point_position = self.point_position + [np.ceil(z_target),
                                                      np.ceil(y_target),
                                                      np.ceil(x_target)]
 
-
+        return(self)
         
     def scale(self, size=128):
-
-       """Scales an cubic image to a certain number of voxels.
-       This function relies on numpy's ndimage.zoom function"""
-       scale_factor = size / max(self.voxels.shape)
-       self.voxels = ndimage.zoom(self.voxels, scale_factor)
-       self.point_position = self.point_position * scale_factor
-       self.voxel_size = False # To ignore this
-       pass
+        """
+        Scales an cubic image to a certain number of voxels.
+        This function relies on numpy's ndimage.zoom function
+        """
+        scale_factor = size / max(self.voxels.shape)
+        self.voxels = ndimage.zoom(self.voxels, scale_factor)
+        self.point_position = self.point_position * scale_factor
+        self.voxel_size = False # To ignore this
+        
+        return(self)
 
     def mri_point_plot(self, vcol=1):
-        """Graphs an points. pt_cols is used to set the cols to iterate 
+        """
+        Graphs an points. pt_cols is used to set the cols to iterate 
         over (different views)
         """
         img = self.voxels
-        points = self.point_position
-        
+        points = self.point_position 
         ax = []
         fig = plt.figure(figsize=(9, 8))
         # TODO make this setable in the function call
@@ -65,11 +69,11 @@ class Image:
         for i in range(points.shape[0]):
             im_slice = int(np.round(points[i, vcol]))
             if vcol == 0:
-                im = img[:, :, im_slice]
-            elif vcol == 1:
-               im = img[:, im_slice, :]
-            else:
                 im = img[im_slice, :, :]
+            elif vcol == 1:
+                im = img[:, im_slice, :]
+            else:
+                im = img[:, :, im_slice]
             ax.append( fig.add_subplot(rows, columns, i+1))
             ax[-1].set_title("Image depth: "+str(im_slice))  # set title
             plt.imshow(im)
@@ -78,8 +82,6 @@ class Image:
             plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
 
         plt.show()
-
-
+        
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
-
