@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='3DLabeler',
-    packages=['3DLabeler'],
+    name='ThreeDLabeler',
+    packages=['ThreeDLabeler'],
     description='Deep Learning tools to annotate 3D images',
     version='0.1.0',
     url='https://github.com/3DLables/3DLabeler/',
