@@ -53,7 +53,7 @@ class Image:
         
         return(self)
 
-    def mri_point_plot(self, vcol=1):
+    def plot(self, vcol=1):
         """
         Graphs an points. pt_cols is used to set the cols to iterate 
         over (different views)
