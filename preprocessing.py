@@ -14,11 +14,10 @@ import time
 import os
 
 # Cloud interface
-<<<<<<< HEAD
 #from google.cloud import storage
-=======
+
 # from google.cloud import storage
->>>>>>> 7f29cf89883f4133747986efe059675cc8ad824d
+
 
 credential_path: str = "/Users/michaeldac/Downloads/mouse-labeler-cff0443f5b5e.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
