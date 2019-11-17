@@ -1,7 +1,7 @@
 import preprocessing as pp 
 import os
 import numpy as np 
-SKULL_DIR = 'MouseSkullData/'
+SKULL_DIR = r"G:\MouseSkulls"
 file_list = os.listdir(SKULL_DIR)
 
 mnc_files = [i for i in file_list if '.mnc' in i]
@@ -33,19 +33,19 @@ processed_files = np.isin(tag_test, existing )
 mnc_files = mnc_files[~processed_files]
 tag_files = tag_files[~processed_files]
 file_names = file_names[~processed_files]
-## pp.package_to_npy(SKULL_DIR, mnc_files, tag_files, file_names)
+pp.package_to_npy(SKULL_DIR, mnc_files, tag_files, file_names)
 
 
 
 
-import nibabel as nib
-img = nib.load('MouseSkullData/bh_cc_aa0839_skull.mnc')
-points = pp.tag_parser('MouseSkullData/bh_cc_aa0839_skull_landmarks.tag')
-skull = pp.Processor(img.get_data(), img.header.get_zooms(), points)
+# import nibabel as nib
+# img = nib.load('MouseSkullData/bh_cc_aa0839_skull.mnc')
+# points = pp.tag_parser('MouseSkullData/bh_cc_aa0839_skull_landmarks.tag')
+# skull = pp.Processor(img.get_data(), img.header.get_zooms(), points)
 
-print(skull.voxels.shape)
-test = np.pad(skull.voxels, ((278, 278), (444, 444), (293, 293)), 'constant', constant_values=(0))
-print('done test')
+# print(skull.voxels.shape)
+# test = np.pad(skull.voxels, ((278, 278), (444, 444), (293, 293)), 'constant', constant_values=(0))
+# print('done test')
 
 # import nilearn as ni
 # from nilearn import plotting
