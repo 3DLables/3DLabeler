@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def mri_point_plot(img, points, vcol=1):
+def mri_plot(img, points, vcol=1):
     """Graphs an points. pt_cols is used to set the cols to iterate 
     over (different views)
     """
