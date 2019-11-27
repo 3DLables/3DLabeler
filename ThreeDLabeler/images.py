@@ -81,6 +81,6 @@ class Image:
             plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
 
         plt.show()
-        
+
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
