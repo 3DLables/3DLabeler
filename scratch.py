@@ -46,7 +46,7 @@ plt.imshow(img.voxels[:, :, 300])
 
 # %%
 for i in range(3):
-    plt.imshow(np.fliplr(img.voxels, i)[:, :, 300])
+    plt.imshow(np.fliplr(img.voxels)[:, :, 300])
     plt.show()
 # %%
 plt.imshow(np.fliplr(img.voxels)[:, :, 300])
