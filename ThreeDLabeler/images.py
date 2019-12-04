@@ -118,11 +118,11 @@ class Image:
     def rotator(self, angle, axes):
 
         voxels = self.voxels
-        points = _cube_points(self.point_position)
+        points = self._cube_points(self.point_position)
 
         voxels = rotate(voxels, angle=angle, axes=axes)
         points = rotate(points, angle=angle, axes=axes)
-        points = _square_points(points)
+        points = self._square_points(points)
 
         self.point_position = points
         self.voxels = voxels
