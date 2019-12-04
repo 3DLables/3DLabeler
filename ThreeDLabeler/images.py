@@ -1,34 +1,35 @@
 import numpy as np
 from scipy import ndimage
 import matplotlib.pyplot as plt
+from scipy.ndimage import rotate
 
 
 class Image:
     """
     Processor class for annotating 3D scans.
-    Arguments: 
+    Arguments:
     voxels: a 3D numpy array
-    voxel_size: a tuple/list of three numbers indicating the voxel size in mm, cm etc
-    point_position: the position in 3D of each point of interest. See tag_parser for more info
+    voxel_size: a tuple/list of three numbers indicating the voxel size in mm,
+    cm etc point_position: the position in 3D of each point of interest.
+    See tag_parser for more info
     """
     def __init__(self, voxels, voxel_size, point_position):
         self.voxels = voxels
         self.voxel_size = voxel_size
         self.point_position = point_position / voxel_size
 
-
     def cube(self):
         """Returns a cube image with all dimensions equal to the longest."""
 
         dims = self.voxels.shape
         max_dim = max(dims)
-        
+
         x_target = (max_dim - dims[0]) / 2
         y_target = (max_dim - dims[1]) / 2
         z_target = (max_dim - dims[2]) / 2
 
         self.voxels = np.pad(self.voxels,
-                            ((int(np.ceil(x_target)), int(np.floor(x_target))),
+                             ((int(np.ceil(x_target)), int(np.floor(x_target))),
                              (int(np.ceil(y_target)), int(np.floor(y_target))),
                              (int(np.ceil(z_target)), int(np.floor(z_target)))),
                             'constant',
@@ -39,7 +40,7 @@ class Image:
                                                      np.ceil(x_target)]
 
         return(self)
-        
+
     def scale(self, size=128):
         """
         Scales an cubic image to a certain number of voxels.
@@ -49,16 +50,16 @@ class Image:
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
         self.point_position = self.point_position * scale_factor
         self.voxel_size = False # To ignore this
-        
+
         return(self)
 
     def plot(self, vcol=1):
         """
-        Graphs an points. pt_cols is used to set the cols to iterate 
+        Graphs an points. pt_cols is used to set the cols to iterate
         over (different views)
         """
         img = self.voxels
-        points = self.point_position 
+        points = self.point_position
         ax = []
         fig = plt.figure(figsize=(9, 8))
         # TODO make this setable in the function call
@@ -81,6 +82,45 @@ class Image:
             plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
 
         plt.show()
+
+    def _cube_points(self, prefix='point_'):
+        """cubes the point positions for rotation"""
+
+        cubedims = self.voxels.shape
+        points = self.point_position
+
+        arr = np.empty(cubedims, dtype=object) # creats empty array
+        for i in range(self.point_position.shape[0]):
+            arr[points[i][0], points[i][1], points[i][2]] = prefix + str(i)
+        return arr
+
+    def _square_points(self, arr, prefix='point_'):
+        """Takes a cubed array and returns it in squre format
+        Note that it does not affect `self` so this has to be passed to
+        self in the rotate function"""
+
+        flatpoints = np.zeros((self.point_position.shape), dtype=int)
+        # double (()) to make it a tuple
+        npoints = self.point_position.shape[0]
+
+        for i in range(npoints):
+            flatpoints[i, :] = np.where(arr == prefix+str(i))
+
+        return flatpoints
+
+    def rotator(self, angle, axes):
+
+        voxels = self.voxels
+        points = _cube_points(self.point_position)
+
+        voxels = rotate(voxels, angle=angle, axes=axes)
+        points = rotate(points, angle=angle, axes=axes)
+        points = _square_points(arr)
+
+        self.point_position = points
+        self.voxels = voxels
+
+        return self
 
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality
