@@ -13,6 +13,7 @@ class Image:
     cm etc point_position: the position in 3D of each point of interest.
     See tag_parser for more info
     """
+
     def __init__(self, voxels, voxel_size, point_position):
         self.voxels = voxels
         self.voxel_size = voxel_size
@@ -83,9 +84,9 @@ class Image:
             plot_cols = np.array([0, 1, 2])
             plot_cols = plot_cols[plot_cols != vcol]
             plt.plot(points[i,
-                     min(plot_cols)],
+                            min(plot_cols)],
                      points[i,
-                     max(plot_cols)],
+                            max(plot_cols)],
                      'ro')
 
         plt.show()
@@ -99,11 +100,11 @@ class Image:
 
         arr = np.zeros((cubedims), dtype=int)  # creats empty array
         for i in range(self.point_position.shape[0]):
-            arr[points[i, 0], points[i, 1], points[i, 2]] =  i+1
+            arr[points[i, 0], points[i, 1], points[i, 2]] = i+1
             # +1 Avoide zeros
         return arr
 
-    def _square_points(self, arr, prefix='point_'):
+    def _square_points(self, arr):
         """Takes a cubed array and returns it in squre format
         Note that it does not affect `self` so this has to be passed to
         self in the rotate function"""
@@ -121,15 +122,17 @@ class Image:
 
         voxels = self.voxels
         voxels = rotate(voxels, angle=angle, axes=axes)
+        # self.voxels = voxels
 
+        # TODO Why does this flip the opposite way?
+        # Probably because my columns are in the wrong order
         points = self._cube_points()
         points = rotate(points, angle=angle, axes=axes)
         points = self._square_points(points)
+        # self.point_position = points
 
-        self.point_position = points
-        self.voxels = voxels
-
-        return self
+        return Image(voxels, 1, points)
+        # TODO why can't I just return self?
 
 # TODO Add posibility to not just cube an image
 # TODO Add Storeage/writing functionality

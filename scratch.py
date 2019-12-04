@@ -1,4 +1,5 @@
 # %%
+from scipy.ndimage import rotate
 import numpy as np
 import ThreeDLabeler as td
 import nibabel as nib
@@ -18,23 +19,20 @@ img_flip0 = td.Image(np.flip(im.get_data(), 0),
                      pt)
 
 img_flip1 = td.Image(np.flip(im.get_data(), 1),
-                            im.header.get_zooms(),
-                            pt)
+                     im.header.get_zooms(),
+                     pt)
 
 
 # We need not rotate the tag file but instead switch columns or take
 # 128-column value
 
 
-
-
-
 # %%
 for i in range(3):
     print(i)
     td.Image(np.flip(im.get_data(), i),
-                            im.header.get_zooms(),
-                            pt).plot()
+             im.header.get_zooms(),
+             pt).plot()
     plt.show()
 
 
@@ -61,7 +59,7 @@ plt.show()
 # %%
 for i in range(4):
     for j in range(3):
-        plt.imshow(np.flip(np.rot90(img.voxels,i), j)[:, :, 300])
+        plt.imshow(np.flip(np.rot90(img.voxels, i), j)[:, :, 300])
         plt.title(f"Rotation of: {i}, and a flip of: {j}")
         plt.show()
 
@@ -75,7 +73,7 @@ for i in [100, 200, 228, 300, 400]:
     f.add_subplot(1, 2, 1)
     plt.imshow(img2[:, :, i])
     plt.title(f'fliped2: {i}')
-    f.add_subplot(1,2,2)
+    f.add_subplot(1, 2, 2)
     plt.imshow(img.voxels[:, :, i])
     plt.title(f'nonflipped: {i}')
     plt.show()
@@ -84,8 +82,8 @@ for i in [100, 200, 228, 300, 400]:
 np.allclose(img2[:, :, 228], img.voxels[:, :, 228])
 
 # %%
-np.allclose(np.flip(np.rot90(img.voxels,3), 1)[:, :, 300],
-            np.flip(np.rot90(img.voxels,1), 0)[:, :, 300])
+np.allclose(np.flip(np.rot90(img.voxels, 3), 1)[:, :, 300],
+            np.flip(np.rot90(img.voxels, 1), 0)[:, :, 300])
 
 # %%
 for i in range(4):
@@ -101,14 +99,13 @@ for i in range(3):
             plt.show()
 
 # %%
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 # prepare some coordinates
 x, y, z = np.indices((8, 8, 8))
 
-# draw cuboids in the top left and bottom right corners, and a link between them
+# draw cuboids in the top left and bottom right corners, and a link between
+# them
 cube1 = (x < 3) & (y < 3) & (z < 3)
 cube2 = (x >= 5) & (y >= 5) & (z >= 5)
 link = abs(x - y) + abs(y - z) + abs(z - x) <= 2
@@ -130,12 +127,12 @@ plt.show()
 # %%
 
 
-
 def explode(data):
     size = np.array(data.shape)*2
     data_e = np.zeros(size - 1, dtype=data.dtype)
     data_e[::2, ::2, ::2] = data
     return data_e
+
 
 # build up the numpy logo
 n_voxels = np.zeros((8, 8, 8), dtype=bool)
@@ -171,7 +168,6 @@ y[:, 1::2, :] += 0.95
 z[:, :, 1::2] += 0.95
 
 
-
 # %%
 
 def cube_plotter(fcols):
@@ -181,17 +177,20 @@ def cube_plotter(fcols):
 
     plt.show()
 
+
 # %%
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.voxels(x, y, z, filled_2, facecolors=np.flipud(fcolors_2), edgecolors=ecolors_2)
+ax.voxels(x, y, z, filled_2, facecolors=np.flipud(
+    fcolors_2), edgecolors=ecolors_2)
 
 plt.show()
 
 # %%
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.voxels(x, y, z, filled_2, facecolors=np.fliplr(fcolors_2), edgecolors=ecolors_2)
+ax.voxels(x, y, z, filled_2, facecolors=np.fliplr(
+    fcolors_2), edgecolors=ecolors_2)
 
 plt.show()
 
@@ -204,14 +203,15 @@ plt.show()
 # %%
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.voxels(x, y, z, filled_2, facecolors=np.rot90(fcolors_2), edgecolors=ecolors_2)
+ax.voxels(x, y, z, filled_2, facecolors=np.rot90(
+    fcolors_2), edgecolors=ecolors_2)
 
 plt.show()
 # %%
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 ax.voxels(x, y, z, filled_2, facecolors=np.flipud(np.fliplr(fcolors_2)),
-     edgecolors=ecolors_2)
+          edgecolors=ecolors_2)
 
 plt.show()
 
@@ -219,22 +219,21 @@ plt.show()
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 ax.voxels(x, y, z, filled_2, facecolors=np.moveaxis(fcolors_2, 1, -1),
-     edgecolors=ecolors_2)
+          edgecolors=ecolors_2)
 
 plt.show()
 
 # %%
 
 
-
 # %%
 test = np.array([i for i in range(27)])
 
 # %%
-test = test.reshape(3,3,3)
+test = test.reshape(3, 3, 3)
 
 # %%
-np.moveaxis(test, 1,2)
+np.moveaxis(test, 1, 2)
 
 # %%
 np.moveaxis(test, 0, 1)
@@ -252,35 +251,15 @@ np.flip(test)
 # %%
 
 print("original\n", test)
-print("axis0\n",test[::-1, :, :])
-print("axis1\n",test[:, ::-1, :])
-print("axis2\n",test[:, :, ::-1])
+print("axis0\n", test[::-1, :, :])
+print("axis1\n", test[:, ::-1, :])
+print("axis2\n", test[:, :, ::-1])
 
 
 # %%
 
 
-## from numpy import flipud, fliplr # we no longer want this.
-# %%
-flip_rot = []
-arr = []
-
-for i in range(3):
-    flip_rot.append('original_rotation' + str(i))
-    arr.append(np.rot90(test, k=i))
-    flip_rot.append('fliplr_rotation'+ str(i))
-    arr.append(np.rot90(fliplr(test),k=i))
-    flip_rot.append('flipbf_rotation'+ str(i))
-    arr.append(np.rot90(flipbf(test),k=i))
-    flip_rot.append('flipud_rotation'+ str(i))
-    arr.append(np.rot90(flipud(test),k=i))
-
-# %%
-arr = np.array(arr)
-
-# %%
-flip_rot[np.unique(arr)]
-
+# from numpy import flipud, fliplr # we no longer want this
 # %%
 
 
@@ -289,15 +268,17 @@ def flipud(m):
         raise ValueError("Input must be >= 1-d.")
     return m[::-1, ...]
 
+
 def fliplr(m):
     if m.ndim < 2:
         raise ValueError("Input must be >= 2-d.")
     return m[:, ::-1]
 
+
 def flipbf(m):
     if m.ndim < 3:
         raise ValueError("Input must be >= 3-d.")
-    return m[:,:,::-1]
+    return m[:, :, ::-1]
 
 
 def rotate3d(m, k, f):
@@ -310,11 +291,24 @@ def rotate3d(m, k, f):
         return f(m).swapaxes(0, 2)
     else:
         pass
+# %%
 
+
+flip_rot = []
+arr = []
+
+for i in range(3):
+    flip_rot.append('original_rotation' + str(i))
+    arr.append(np.rot90(test, k=i))
+    flip_rot.append('fliplr_rotation' + str(i))
+    arr.append(np.rot90(fliplr(test), k=i))
+    flip_rot.append('flipbf_rotation' + str(i))
+    arr.append(np.rot90(flipbf(test), k=i))
+    flip_rot.append('flipud_rotation' + str(i))
+    arr.append(np.rot90(flipud(test), k=i))
 
 
 # %%
-
 for i in range(3):
     for j in range(3):
         print(np.alltrue(fliplr(flipud(test)) == fliplr(test).swapaxes(i, j)))
@@ -333,6 +327,8 @@ def swapper12(m, funlist):
         array_list.append(np.rot90(m, i))
 
     return array_list
+
+
 # %%
 teest = swapper12(test, funlist)
 
@@ -344,7 +340,6 @@ for i in range(3):
         tlist.append(np.rollaxis(test, i, j))
 
 # %%
-from scipy.ndimage import rotate
 tlist = []
 for i in [0, 90, 180, 270]:
     for j in range(3):
@@ -398,7 +393,6 @@ betterList = tlist[0].tolist()
 
 # %%
 betterList = [i.tolist() for i in tlist]
-from scipy.ndimage import rotate
 # %%
 
 imscale = img.cube().scale(128)
@@ -409,10 +403,10 @@ kp = imscale.point_position
 
 # %% this works
 a, b, c = (2, 1, 0)
-s90 = rotate(s, 90, (0,2))
-s180 = rotate(s, 180, (0,2))
-s270 = rotate(s, 270, (0,2))
-kp90  = np.array([[i[a], i[b], 128-i[c]] for i in kp])
+s90 = rotate(s, 90, (0, 2))
+s180 = rotate(s, 180, (0, 2))
+s270 = rotate(s, 270, (0, 2))
+kp90 = np.array([[i[a], i[b], 128-i[c]] for i in kp])
 kp180 = np.array([[i[a], i[b], 128-i[c]] for i in kp90])
 kp270 = np.array([[i[a], i[b], 128-i[c]] for i in kp180])
 td.mri_plot(s, kp, vcol=1)
@@ -422,26 +416,26 @@ td.mri_plot(s270, kp270, vcol=1)
 
 # %% this works
 a, b, c = (1, 0, 2)
-s90 = rotate(s, 90, (1,2))
-s180 = rotate(s, 180, (1,2))
-s270 = rotate(s, 270, (1,2))
-kp90  = np.array([[i[a], 128-i[b], i[c]] for i in kp])
+s90 = rotate(s, 90, (1, 2))
+s180 = rotate(s, 180, (1, 2))
+s270 = rotate(s, 270, (1, 2))
+kp90 = np.array([[i[a], 128-i[b], i[c]] for i in kp])
 kp180 = np.array([[i[a], 128-i[b], i[c]] for i in kp90])
 kp270 = np.array([[i[a], 128-i[b], i[c]] for i in kp180])
-#td.mri_plot(s, kp, vcol=1)
+# td.mri_plot(s, kp, vcol=1)
 td.mri_plot(s90, kp90, vcol=1)
 td.mri_plot(s180, kp180, vcol=1)
 td.mri_plot(s270, kp270, vcol=1)
 
 # %%
 a, b, c = (1, 0, 2)
-s90 =  rotate(s, 90,  (0,1))
-s180 = rotate(s, 180, (0,1))
-s270 = rotate(s, 270, (0,1))
-kp90  = np.array([[i[a], 128-i[b], i[c]] for i in kp])
+s90 = rotate(s, 90,  (0, 1))
+s180 = rotate(s, 180, (0, 1))
+s270 = rotate(s, 270, (0, 1))
+kp90 = np.array([[i[a], 128-i[b], i[c]] for i in kp])
 kp180 = np.array([[i[a], 128-i[b], i[c]] for i in kp90])
 kp270 = np.array([[i[a], 128-i[b], i[c]] for i in kp180])
-#td.mri_plot(s, kp, vcol=1)
+# td.mri_plot(s, kp, vcol=1)
 td.mri_plot(s90, kp90, vcol=1)
 td.mri_plot(s180, kp180, vcol=1)
 td.mri_plot(s270, kp270, vcol=1)
@@ -460,6 +454,6 @@ for i in range(intkp.shape[0]):
 # %%
 
 
-arr2 = np.fliplr(arr).swapaxes(0,1)
+arr2 = np.fliplr(arr).swapaxes(0, 1)
 
 # %%
