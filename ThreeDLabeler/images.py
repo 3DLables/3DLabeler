@@ -95,10 +95,12 @@ class Image:
 
         cubedims = self.voxels.shape
         points = self.point_position
+        points = np.rint(points).astype('int')
 
-        arr = np.empty(cubedims, dtype=object)  # creats empty array
+        arr = np.zeros((cubedims), dtype=int)  # creats empty array
         for i in range(self.point_position.shape[0]):
-            arr[points[i][0], points[i][1], points[i][2]] = prefix + str(i)
+            arr[points[i, 0], points[i, 1], points[i, 2]] =  i+1
+            # +1 Avoide zeros
         return arr
 
     def _square_points(self, arr, prefix='point_'):
@@ -111,16 +113,16 @@ class Image:
         npoints = self.point_position.shape[0]
 
         for i in range(npoints):
-            flatpoints[i, :] = np.where(arr == prefix+str(i))
+            flatpoints[i, :] = np.where(arr == i+1)
 
         return flatpoints
 
     def rotator(self, angle, axes):
 
         voxels = self.voxels
-        points = self._cube_points(self.point_position)
-
         voxels = rotate(voxels, angle=angle, axes=axes)
+
+        points = self._cube_points()
         points = rotate(points, angle=angle, axes=axes)
         points = self._square_points(points)
 
