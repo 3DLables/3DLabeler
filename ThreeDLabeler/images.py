@@ -29,11 +29,14 @@ class Image:
         z_target = (max_dim - dims[2]) / 2
 
         self.voxels = np.pad(self.voxels,
-                             ((int(np.ceil(x_target)), int(np.floor(x_target))),
-                             (int(np.ceil(y_target)), int(np.floor(y_target))),
-                             (int(np.ceil(z_target)), int(np.floor(z_target)))),
-                            'constant',
-                            constant_values=(0))
+                             ((int(np.ceil(x_target)),
+                               int(np.floor(x_target))),
+                              (int(np.ceil(y_target)),
+                               int(np.floor(y_target))),
+                              (int(np.ceil(z_target)),
+                               int(np.floor(z_target)))),
+                             'constant',
+                             constant_values=(0))
 
         self.point_position = self.point_position + [np.ceil(z_target),
                                                      np.ceil(y_target),
@@ -49,7 +52,7 @@ class Image:
         scale_factor = size / max(self.voxels.shape)
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
         self.point_position = self.point_position * scale_factor
-        self.voxel_size = False # To ignore this
+        self.voxel_size = False  # To ignore this
 
         return(self)
 
@@ -74,12 +77,16 @@ class Image:
                 im = img[:, im_slice, :]
             else:
                 im = img[:, :, im_slice]
-            ax.append( fig.add_subplot(rows, columns, i+1))
+            ax.append(fig.add_subplot(rows, columns, i+1))
             ax[-1].set_title("Image depth: "+str(im_slice))  # set title
             plt.imshow(im)
             plot_cols = np.array([0, 1, 2])
             plot_cols = plot_cols[plot_cols != vcol]
-            plt.plot(points[i, min(plot_cols)], points[i, max(plot_cols)], 'ro')
+            plt.plot(points[i,
+                     min(plot_cols)],
+                     points[i,
+                     max(plot_cols)],
+                     'ro')
 
         plt.show()
 
@@ -89,7 +96,7 @@ class Image:
         cubedims = self.voxels.shape
         points = self.point_position
 
-        arr = np.empty(cubedims, dtype=object) # creats empty array
+        arr = np.empty(cubedims, dtype=object)  # creats empty array
         for i in range(self.point_position.shape[0]):
             arr[points[i][0], points[i][1], points[i][2]] = prefix + str(i)
         return arr
@@ -115,7 +122,7 @@ class Image:
 
         voxels = rotate(voxels, angle=angle, axes=axes)
         points = rotate(points, angle=angle, axes=axes)
-        points = _square_points(arr)
+        points = _square_points(points)
 
         self.point_position = points
         self.voxels = voxels
