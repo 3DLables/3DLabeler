@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 import ThreeDLabeler as td
-import nibabel as nib 
+import nibabel as nib
 import matplotlib.pyplot as plt
 # %%
 im = nib.load('./MouseSkullData/475.mnc')
@@ -10,16 +10,19 @@ pt = td.tag_parser('MouseSkullData/475_landmarks.tag')
 img = td.Image(im.get_data(), im.header.get_zooms(), pt)
 
 # %%
+img = img.cube().scale(64)
+
+# %%
 img_flip0 = td.Image(np.flip(im.get_data(), 0),
-                            im.header.get_zooms(),
-                            pt)
+                     im.header.get_zooms(),
+                     pt)
 
 img_flip1 = td.Image(np.flip(im.get_data(), 1),
                             im.header.get_zooms(),
                             pt)
 
 
-# We need not rotate the tag file but instead switch columns or take 
+# We need not rotate the tag file but instead switch columns or take
 # 128-column value
 
 
@@ -306,8 +309,8 @@ def rotate3d(m, k, f):
     elif k == 2:
         return f(m).swapaxes(0, 2)
     else:
-        pass 
-    
+        pass
+
 
 
 # %%
