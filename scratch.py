@@ -2,37 +2,47 @@
 import numpy as np
 import ThreeDLabeler as td
 import nibabel as nib
+import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
 # %%
 im = nib.load('./MouseSkullData/475.mnc')
 pt = td.tag_parser('MouseSkullData/475_landmarks.tag')
 
-img = td.Image(im.get_data(), im.header.get_zooms(), pt)
+img = td.Image(im.get_data(), pt, im.header.get_zooms())
 
 # %%
 img = img.cube().scale(64)
-# %%
-test = img.rotator(90, (0, 2))
-# %%
-test0 = img.rotator(90, (1, 2))
-
 
 # %%
+test = img.img_transformer()
 
 
 # %%
-img_flip0 = td.Image(np.flip(im.get_data(), 0),
-                     im.header.get_zooms(),
-                     pt)
-
-img_flip1 = td.Image(np.flip(im.get_data(), 1),
-                     im.header.get_zooms(),
-                     pt)
-
-
+for i in test:
+    i.plot()
 # %%
 t1 = img._cube_points()
 t1t = img._square_points(t1)
 td.mri_plot(img.voxels, t1t)
+
+# %%
+test = np.arange(27)
+test = test.reshape(3, 3, 3)
+
+tl = []
+for i in td.images.rotations24(test):
+    tl.append(i)
+
+# %%
+for i in test:
+    count = 0
+    for j in test:
+        if np.array_equal(i.point_position, j.point_position):
+            count += 1
+    if count > 1:
+        print(i.point_position, '\n', "was duplicated", '\n',
+              j.point_position, '\n done \n')
+    else:
+        print("no dups")
 
 # %%
