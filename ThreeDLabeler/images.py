@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import ndimage
 import matplotlib.pyplot as plt
-from scipy.ndimage import rotate
 
 
 class Image:
@@ -14,7 +13,7 @@ class Image:
     See tag_parser for more info
     """
 
-    def __init__(self, voxels, voxel_size, point_position):
+    def __init__(self, voxels, point_position, voxel_size=(1, 1, 1)):
         self.voxels = voxels
         self.voxel_size = voxel_size
         self.point_position = point_position / voxel_size
@@ -78,25 +77,33 @@ class Image:
                 im = img[:, im_slice, :]
             else:
                 im = img[:, :, im_slice]
-            ax.append(fig.add_subplot(rows, columns, i+1))
-            ax[-1].set_title("Image depth: "+str(im_slice))  # set title
-            plt.imshow(im)
             plot_cols = np.array([0, 1, 2])
             plot_cols = plot_cols[plot_cols != vcol]
-            plt.plot(points[i,
-                            min(plot_cols)],
-                     points[i,
-                            max(plot_cols)],
-                     'ro')
+            ax.append(fig.add_subplot(rows, columns, i+1))  # set title
+            ax[-1].set_title("Image depth: " +
+                             str(im_slice) +
+                             '\n x-axis' +
+                             str(np.round(points[i, min(plot_cols)])) +
+                             '\n y-axis' +
+                             str(np.round(points[i, max(plot_cols)])))
+            plt.imshow(im)
 
+            plt.plot(points[i, min(plot_cols)],
+                     points[i, max(plot_cols)],
+                     'ro')
+        # TODO Fix bug where points don't plot properly
         plt.show()
 
     def _cube_points(self):
-        """cubes the point positions for rotation"""
+        """Cubes two dimensional array of key points for rotation
+
+        Returns:
+            numpy array -- A 3D Numpy array with point 1-n shown in 3D Space
+        """
 
         cubedims = self.voxels.shape
         points = self.point_position
-        points = np.rint(points).astype('int')
+        points = np.rint(points).astype('int')  # sets to int for indexing
 
         arr = np.zeros((cubedims), dtype=int)  # creates empty array
         for i in range(self.point_position.shape[0]):
@@ -105,52 +112,83 @@ class Image:
         return arr
 
     def _square_points(self, arr):
-        """Takes a cubed array and returns it in square format
-        Note that it does not affect `self` so this has to be passed to
-        self in the rotate function"""
+        """Takes a cubed point array and return a 2D version of it with key
+        points
 
+        Arguments:
+            arr {3D Numpy Array} -- The 3D array with key points in it
+
+        Returns:
+            2D Numpy Array -- The x, y, z coordinates of each key point
+
+        Yields:
+            numpy array -- when used as an iterator. This may be a bug
+        """
         flatpoints = np.zeros((self.point_position.shape), dtype=int)
         # double (()) to make it a tuple
-        npoints = self.point_position.shape[0]
+        npoints = flatpoints.shape[0]
 
         for i in range(npoints):
             flatpoints[i, :] = np.where(arr == i+1)
 
         return flatpoints
 
-    def rotator(self, angle, axes):
+    def img_transformer(self):
+        """Generates 24 projections of a 3D image along with the key points
 
-        voxels = self.voxels
-        voxels = rotate(voxels, angle=angle, axes=axes)
-        # self.voxels = voxels
+        Returns:
+            ThreeDLabeler.Image -- The voxels and key points for a projection
+            of the image
+        """
+        voxels = []
+        points = []
+        for i in rotations24(self.voxels):
+            voxels.append(i)
+        for j in rotations24(self._cube_points()):
+            points.append(self._square_points(j))
 
-        # TODO Why does this flip the opposite way?
-        # Probably because my columns are in the wrong order
-        points = self._cube_points()
-        points = rotate(points, angle=angle, axes=axes)
-        points = self._square_points(points)
-        # self.point_position = pointstpoints
+        imgs = []
+        for i in range(24):
+            imgs.append(Image(voxels[i], points[i]))
 
-        return Image(voxels, 1, points)
-        # TODO why can't I just return self?
+        return imgs
+
 
 # TODO Add possibility to not just cube an image
 # TODO Add Storeage/writing functionality
+def rotations24(polycube):
+    """https://stackoverflow.com/
+    questions/33190042/how-to-calculate-all-24-rotations-of-3d-array"""
+    # imagine shape is pointing in axis 0 (up)
+
+    # 4 rotations about axis 0
+    yield from rotations4(polycube, 0)
+
+    # rotate 180 about axis 1, now shape is pointing down in axis 0
+    # 4 rotations about axis 0
+    yield from rotations4(rot90(polycube, 2, axis=1), 0)
+
+    # rotate 90 or 270 about axis 1, now shape is pointing in axis 2
+    # 8 rotations about axis 2
+    yield from rotations4(rot90(polycube, axis=1), 2)
+    yield from rotations4(rot90(polycube, -1, axis=1), 2)
+
+    # rotate about axis 2, now shape is pointing in axis 1
+    # 8 rotations about axis 1
+    yield from rotations4(rot90(polycube, axis=2), 1)
+    yield from rotations4(rot90(polycube, -1, axis=2), 1)
 
 
-def _flipud(m):
-    if m.ndim < 1:
-        raise ValueError("Input must be >= 1-d.")
-    return m[::-1, ...]
+def rotations4(polycube, axis):
+    """List the four rotations of the given cube about the given axis."""
+    for i in range(4):
+        yield rot90(polycube, i, axis)
 
 
-def _fliplr(m):
-    if m.ndim < 2:
-        raise ValueError("Input must be >= 2-d.")
-    return m[:, ::-1]
-
-
-def _flipbf(m):
-    if m.ndim < 3:
-        raise ValueError("Input must be >= 3-d.")
-    return m[:, :, ::-1]
+def rot90(m, k=1, axis=2):
+    """Rotate an array k*90 degrees in the counter-clockwise direction
+    around the given axis"""
+    m = np.swapaxes(m, 2, axis)
+    m = np.rot90(m, k)
+    m = np.swapaxes(m, 2, axis)
+    return m
