@@ -91,21 +91,21 @@ class Image:
 
         plt.show()
 
-    def _cube_points(self, prefix='point_'):
+    def _cube_points(self):
         """cubes the point positions for rotation"""
 
         cubedims = self.voxels.shape
         points = self.point_position
         points = np.rint(points).astype('int')
 
-        arr = np.zeros((cubedims), dtype=int)  # creats empty array
+        arr = np.zeros((cubedims), dtype=int)  # creates empty array
         for i in range(self.point_position.shape[0]):
             arr[points[i, 0], points[i, 1], points[i, 2]] = i+1
             # +1 Avoide zeros
         return arr
 
     def _square_points(self, arr):
-        """Takes a cubed array and returns it in squre format
+        """Takes a cubed array and returns it in square format
         Note that it does not affect `self` so this has to be passed to
         self in the rotate function"""
 
@@ -129,10 +129,28 @@ class Image:
         points = self._cube_points()
         points = rotate(points, angle=angle, axes=axes)
         points = self._square_points(points)
-        # self.point_position = points
+        # self.point_position = pointstpoints
 
         return Image(voxels, 1, points)
         # TODO why can't I just return self?
 
-# TODO Add posibility to not just cube an image
+# TODO Add possibility to not just cube an image
 # TODO Add Storeage/writing functionality
+
+
+def _flipud(m):
+    if m.ndim < 1:
+        raise ValueError("Input must be >= 1-d.")
+    return m[::-1, ...]
+
+
+def _fliplr(m):
+    if m.ndim < 2:
+        raise ValueError("Input must be >= 2-d.")
+    return m[:, ::-1]
+
+
+def _flipbf(m):
+    if m.ndim < 3:
+        raise ValueError("Input must be >= 3-d.")
+    return m[:, :, ::-1]
