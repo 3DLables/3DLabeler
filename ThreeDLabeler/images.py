@@ -45,9 +45,11 @@ class Image:
         return(self)
 
     def scale(self, size=128):
-        """
-        Scales an cubic image to a certain number of voxels.
-        This function relies on numpy's ndimage.zoom function
+        """Scales a 3D Numpy array to the desired dimensions
+
+        Keyword Arguments:
+            size {int} -- The number of pixels that should be scaled too.
+            It uses the numpy.ndimage scale function. (default: {128})
         """
         scale_factor = size / max(self.voxels.shape)
         self.voxels = ndimage.zoom(self.voxels, scale_factor)
