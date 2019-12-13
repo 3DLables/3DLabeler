@@ -2,14 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def mri_plot(img, points, vcol=1):
+def mri_plot(img, points, vcol=1, figsize=(9, 8)):
     """Graphs an points. pt_cols is used to set the cols to iterate
     over (different views)
     """
 
     ax = []
-    fig = plt.figure(figsize=(9, 8))
-    # TODO make this setable in the function call
+    fig = plt.figure(figsize=figsize)
     columns = 3
     rows = 2
 
