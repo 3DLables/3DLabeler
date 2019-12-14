@@ -94,6 +94,7 @@ class Image:
                      points[i, max(plot_cols)],
                      'ro')
         # TODO Fix bug where points don't plot properly
+        # BUG
         plt.show()
 
     def _cube_points(self):
