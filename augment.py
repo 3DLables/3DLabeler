@@ -5,43 +5,44 @@ import os
 from scipy.ndimage import rotate
 import random
 from random import shuffle
-import ThreeDLabeler.images as td
+import ThreeDLabeler as td
+from ThreeDLabeler.images import Image
+
 import sys
 
 
-basepath = '/Users/michaeldac/Code/CUNY/698/ReducedData/'
+basepath = '/Users/michaeldac/Code/CUNY/698/ReducedData64/'
 file_list = os.listdir(basepath)
 file_list = [i for i in file_list if i.endswith('.npy')]
 
-voxels = []
-points = []
+skulls = []
 print('LOADING .npy FILES...')
 for file in tqdm(file_list): # -1 because of the model
-    file = np.load(basepath+file, allow_pickle=True)
-    voxels.append(file[0])
-    points.append(file[1])
+    file = np.load(basepath + file, allow_pickle=True)
+    file = td.Image(file[0], file[1])
+    skulls.append(file)
+    
+#skulls = np.array(skulls)
 
-print('CONVERTING LIST TO NDARRAY...')
-points = np.array(points)
-voxels = np.array(voxels)
+print(f'index value type: {type(skulls[0])}')
 
-skulls = []
-print('REDUCING IMAGES...')
-for i in tqdm(range(len(file_list))):
-    skull = td.Image(voxels[i], points[i])
-    skull = skull.scale(64)
-    skulls.append(skull)
+def rotate_skulls(skulls):
+    skull_list = []
+    for i in tqdm(skulls):
+        skull_list.append(i.img_transformer())
+    skull_list = np.array(skull_list).flatten()
 
-file_path = '/Users/michaeldac/Code/CUNY/698/ReducedData64'
+    skull_list = np.array(skull_list)
+    return skull_list
+
+augmented_skulls = rotate_skulls(skulls)
+
+
+print (f'length of augmented data: {len(augmented_skulls)}')
+
+file_path = '/Users/michaeldac/Code/CUNY/698/AugmentedData'
 count = 1
-for i in tqdm(skulls):
+for i in tqdm(augmented_skulls):
     npy_file = (i.voxels, i.point_position)
     np.save(f'{file_path}/skull_{count}.npy', npy_file)
     count += 1
-
-
-
-
-
-
-print (len(skulls))
