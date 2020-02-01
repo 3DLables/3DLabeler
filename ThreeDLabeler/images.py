@@ -136,7 +136,7 @@ class Image:
 
         return flatpoints
 
-    def img_transformer(self):
+    def img_transformer(self, number_rot=24):
         """Generates 24 projections of a 3D image along with the key points
 
         Returns:
@@ -145,9 +145,15 @@ class Image:
         """
         voxels = []
         points = []
-        for i in rotations24(self.voxels):
+        if number_rot == 24:
+            rot_fun = rotations24
+        elif number_rot == 4:
+            rot_fun = rotations4
+        else:
+            raise FunctionError("Incorrect number or rotations, try 4, 24")
+        for i in rot_fun(self.voxels):
             voxels.append(i)
-        for j in rotations24(self._cube_points()):
+        for j in rot_fun(self._cube_points()):
             points.append(self._square_points(j))
 
         imgs = []
@@ -165,24 +171,31 @@ def rotations24(polycube):
     # imagine shape is pointing in axis 0 (up)
 
     # 4 rotations about axis 0
-    yield from rotations4(polycube, 0)
+    yield from rotations_flip4(polycube, 0)
 
     # rotate 180 about axis 1, now shape is pointing down in axis 0
     # 4 rotations about axis 0
-    yield from rotations4(rot90(polycube, 2, axis=1), 0)
+    yield from rotations_flip4(rot90(polycube, 2, axis=1), 0)
 
     # rotate 90 or 270 about axis 1, now shape is pointing in axis 2
     # 8 rotations about axis 2
-    yield from rotations4(rot90(polycube, axis=1), 2)
-    yield from rotations4(rot90(polycube, -1, axis=1), 2)
+    yield from rotations_flip4(rot90(polycube, axis=1), 2)
+    yield from rotations_flip4(rot90(polycube, -1, axis=1), 2)
 
     # rotate about axis 2, now shape is pointing in axis 1
     # 8 rotations about axis 1
-    yield from rotations4(rot90(polycube, axis=2), 1)
-    yield from rotations4(rot90(polycube, -1, axis=2), 1)
+    yield from rotations_flip4(rot90(polycube, axis=2), 1)
+    yield from rotations_flip4(rot90(polycube, -1, axis=2), 1)
 
 
-def rotations4(polycube, axis):
+def rotations4(polycube):
+    yield polycube  # Unit yeld
+    yield polycube[::-1, :, :]
+    yield polycube[:, ::-1, :]
+    yield polycube[..., ::-1]
+
+
+def rotations_flip4(polycube, axis):
     """List the four rotations of the given cube about the given axis."""
     for i in range(4):
         yield rot90(polycube, i, axis)
