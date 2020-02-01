@@ -157,7 +157,7 @@ class Image:
             points.append(self._square_points(j))
 
         imgs = []
-        for i in range(24):
+        for i in range(number_rot):
             imgs.append(Image(voxels[i], points[i]))
 
         return imgs
