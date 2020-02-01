@@ -190,7 +190,9 @@ def rotations4(polycube, axis):
 
 def rot90(m, k=1, axis=2):
     """Rotate an array k*90 degrees in the counter-clockwise direction
-    around the given axis"""
+    around the given axis
+    This differs from np's rot90 because it's 3D
+    """
     m = np.swapaxes(m, 2, axis)
     m = np.rot90(m, k)
     m = np.swapaxes(m, 2, axis)
