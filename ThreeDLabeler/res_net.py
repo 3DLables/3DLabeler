@@ -5,16 +5,21 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.initializers import glorot_uniform
 
+
 def identity_block(X, f, filters, stage, block):
     """
     From Coursera shamelessly coppied...
     Implementation of the identity block as defined in Figure 4
     Arguments:
     X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
-    f -- integer, specifying the shape of the middle CONV's window for the main path
-    filters -- python list of integers, defining the number of filters in the CONV layers of the main path
-    stage -- integer, used to name the layers, depending on their position in the network
-    block -- string/character, used to name the layers, depending on their position in the network
+    f -- integer, specifying the shape of the middle CONV's window for the main
+     path
+    filters -- python list of integers, defining the number of filters in the
+    CONV layers of the main path
+    stage -- integer, used to name the layers, depending on their position in
+    the network
+    block -- string/character, used to name the layers, depending on their
+    position in the network
     Returns:
     X -- output of the identity block, tensor of shape (n_H, n_W, n_C)
     """
@@ -24,7 +29,6 @@ def identity_block(X, f, filters, stage, block):
     # Retrieve Filters
     F1, F2, F3 = filters
 
-    # Save the input value. You'll need this later to add back to the main path.
     X_shortcut = X
 
     # First component of main path
@@ -50,10 +54,10 @@ def identity_block(X, f, filters, stage, block):
 
     X = BatchNormalization(axis=3, name=bn_name_base + '2c')(X)
 
-    # Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)
+    # Final step: Add shortcut value to main path, and pass it through a RELU
+    # activation
     X = Add()([X_shortcut, X])
     X = Activation('relu')(X)
-    ### END CODE HERE ###
 
     return X
 
@@ -86,8 +90,8 @@ def convolutional_block(X, f, filters, stage, block, s=2):
 
     # Save the input value
     X_shortcut = X
-    ##### MAIN PATH #####
-    # First component of main pathn
+    # MAIN PATH #####
+    # First component of main path n
 
     X = Conv3D(F1, (1, 1, 1), strides=(s, s, s), padding='valid',
                name=conv_name_base + '2a',
@@ -116,16 +120,18 @@ def convolutional_block(X, f, filters, stage, block, s=2):
 
     X_shortcut = BatchNormalization(
         axis=3, name=bn_name_base + '1')(X_shortcut)
-    # Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)
+    # Final step: Add shortcut value to main path, and pass it through a RELU
+    # activation
     X = Add()([X_shortcut, X])
     X = Activation('relu')(X)
-    ### END CODE HERE ###
+
     return X
 
 
 # GRADED FUNCTION: ResNet50
 
-def ResNet50(input_shape=(64, 64, 64, 1), classes=6):  # Classes need to be fixed
+def ResNet50(input_shape=(64, 64, 64, 1), classes=6):
+    # Classes need to be fixed
     """
     Implementation of the popular ResNet50 the following architecture:
     Conv3D -> BATCHNORM -> RELU -> MAXPOOL -> CONVBLOCK -> IDBLOCK*2 ->
@@ -182,3 +188,6 @@ def ResNet50(input_shape=(64, 64, 64, 1), classes=6):  # Classes need to be fixe
     # Create model
     model = Model(inputs=X_input, outputs=X, name='ResNet50')
     return model
+
+
+plot_model()
