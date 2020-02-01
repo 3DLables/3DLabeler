@@ -2,13 +2,13 @@
 import numpy as np
 import ThreeDLabeler as td
 import nibabel as nib
-import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
+#
 # %%
 im = nib.load('./MouseSkullData/475.mnc')
 pt = td.tag_parser('MouseSkullData/475_landmarks.tag')
 
-img = td.Image(im.get_data(), pt, im.header.get_zooms())
+img = td.Image(im.get_fdata(), pt, im.header.get_zooms())
 
 # %%
 img = img.cube().scale(64)

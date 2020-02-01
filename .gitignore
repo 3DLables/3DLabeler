@@ -116,3 +116,4 @@ client_secrets.json
 .DS_Store
 *.npy
 .vscode
+.history
