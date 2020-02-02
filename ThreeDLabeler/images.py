@@ -149,6 +149,8 @@ class Image:
             rot_fun = rotations24
         elif number_rot == 4:
             rot_fun = rotations4
+        elif number_rot == 2:
+            rot_fun = rotations2
         else:
             raise FunctionError("Incorrect number or rotations, try 4, 24")
         for i in rot_fun(self.voxels):
@@ -193,6 +195,13 @@ def rotations4(polycube):
     yield polycube[::-1, :, :]
     yield polycube[:, ::-1, :]
     yield polycube[..., ::-1]
+
+
+def rotations2(polycube):
+    yield polycube  # Unit yeld
+    yield polycube[::-1, :, :]
+    # yield polycube[:, ::-1, :]
+    # yield polycube[..., ::-1]
 
 
 def rotations_flip4(polycube, axis):
