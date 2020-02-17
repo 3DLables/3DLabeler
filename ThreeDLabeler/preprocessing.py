@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 from io import StringIO
 import nibabel as nib
+from ThreeDLabeler.images import Image
 
 
 def package_to_npy(file_path: str, mnc_files: list,
@@ -27,7 +28,7 @@ def package_to_npy(file_path: str, mnc_files: list,
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(f'{file_path}/{mnc_files[i]}')
         tag = tag_parser(f'{file_path}/{tag_files[i]}')
-        im = Processor(img.get_data(), img.header.get_zooms(), tag)
+        im = Image(img.get_data(), tag, img.header.get_zooms())
         im.cube().scale(outputsize)
         npy_file = (im.voxels, im.point_position)
         np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
