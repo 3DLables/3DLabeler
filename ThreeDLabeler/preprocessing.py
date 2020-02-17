@@ -1,24 +1,24 @@
 import numpy as np
 from tqdm import tqdm
 from io import StringIO
-import time
 import os
 
 
-def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: list):
+def package_to_npy(file_path: str, mnc_files: list,
+                   tag_files: list, mnc_names: list):
     """
     INPUT:  Path where raw image files exist,
-            List of .mnc files, 
-            List of corresponding .tag files, 
+            List of .mnc files,
+            List of corresponding .tag files,
             List of .mnc prefix names
-    
-    The .mnc file is loaded 
+
+    The .mnc file is loaded
     The .tag file is parsed and converted to an ndarray via tag_parser()
     Processor class is instantiated with the .mnc and .tag file and cubes
-    any images shaped as rectangular prisms and scales down image 
+    any images shaped as rectangular prisms and scales down image
     resolution to 128x128x128.
-    
-    OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file 
+
+    OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file
     and saved to disk locally.
     """
     print('Starting image processing...')
@@ -31,25 +31,27 @@ def package_to_npy(file_path: str, mnc_files: list, tag_files: list, mnc_names: 
         npy_file = (im.voxels, im.point_position)
         np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
         count += 1
-    
-    print(f'{count} .mnc/.tag file pairs have been processed and saved as .npy files')
+
+    print(f'{count} .mnc/.tag file pairs have been processed and ' +
+          'saved as .npy files')
 
 
 def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
     """
-    INPUT:  Path where processed images exist, 
-            GCP project name, 
+    INPUT:  Path where processed images exist,
+            GCP project name,
             GCP bucket name
-    
+
     GCP client id'd and blob located.
-    Loop through folder of processed images and upload one at a time. 
-    
-    OUTPUT: Returns None. Processed image files are uploaded to GCP Cloud Storage
+    Loop through folder of processed images and upload one at a time.
+
+    OUTPUT: Returns None. Processed image files are uploaded to GCP
+    Cloud Storage
     """
     print('Starting upload to Google Cloud Storage project')
-    #storage_client = storage.Client(project=project_name)
-    #bucket = storage_client.get_bucket(bucket_name)
-    
+    #  storage_client = storage.Client(project=project_name)
+    #  bucket = storage_client.get_bucket(bucket_name)
+
     count = 0
     for filename in tqdm(os.listdir(path_to_files)):
         blob = bucket.blob(filename)
@@ -62,8 +64,9 @@ def upload_to_gcp(path_to_files: str, project_name: str, bucket_name: str):
 
 def tag_parser(file_path: str):
     """
-    parses .tag files by taking the file path. 
-    Functionality is currently limited to only certain tag files and is not guaranteeded 
+    parses .tag files by taking the file path.
+    Functionality is currently limited to only certain tag files and is not
+    guaranteed
     to work everywhere
     """
     with open(file_path) as f:
