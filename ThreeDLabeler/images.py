@@ -152,7 +152,7 @@ class Image:
         elif number_rot == 2:
             rot_fun = rotations2
         else:
-            raise FunctionError("Incorrect number or rotations, try 4, 24")
+            raise ValueError("Incorrect number or rotations, try 4, 24")
         for i in rot_fun(self.voxels):
             voxels.append(i)
         for j in rot_fun(self._cube_points()):
