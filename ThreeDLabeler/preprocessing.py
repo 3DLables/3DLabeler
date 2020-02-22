@@ -3,16 +3,24 @@ from tqdm import tqdm
 from io import StringIO
 import nibabel as nib
 from ThreeDLabeler.images import Image
+import pickle
 
 
-def package_to_npy(file_path: str, mnc_files: list,
-                   tag_files: list, mnc_names: list,
-                   outputsize=128):
+def package_to_npy(file_path: str,
+                   mnc_files: list,
+                   tag_files: list,
+                   mnc_names: list,
+                   outputsize=128,
+                   mnc_sub_folder=None,
+                   tag_sub_folder=None,
+                   output_path='./'):
     """
     INPUT:  Path where raw image files exist,
             List of .mnc files,
             List of corresponding .tag files,
             List of .mnc prefix names
+            sub folder prefix for mnc files
+            sub folder for tag files
 
     The .mnc file is loaded
     The .tag file is parsed and converted to an ndarray via tag_parser()
@@ -23,6 +31,16 @@ def package_to_npy(file_path: str, mnc_files: list,
     OUTPUT: Tuple of the processed .mnc and .tag files stored as .npy file
     and saved to disk locally.
     """
+    if mnc_sub_folder is None:
+        pass
+    else:
+        [mnc_sub_folder + file for file in mnc_files]
+
+    if tag_sub_folder is None:
+        pass
+    else:
+        [tag_sub_folder + file for file in tag_files]
+
     print('Starting image processing...')
     count = 0
     for i in tqdm(range(len(mnc_files))):
@@ -30,8 +48,9 @@ def package_to_npy(file_path: str, mnc_files: list,
         tag = tag_parser(f'{file_path}/{tag_files[i]}')
         im = Image(img.get_data(), tag, img.header.get_zooms())
         im.cube().scale(outputsize)
-        npy_file = (im.voxels, im.point_position)
-        np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
+        pickle.dump(im, open(output_path+mnc_names[i]+'_pickle.p', 'wb'))
+        # npy_file = (im.voxels, im.point_position)
+        # np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
         count += 1
 
     print(f'{count} .mnc/.tag file pairs have been processed and ' +
