@@ -1,6 +1,7 @@
 from ThreeDLabeler import preprocessing as pp
 import os
 import numpy as np
+import nibabel as nib
 
 BASE_DIR = ('/mnt/Storage2/Hallgrimsson/Automated_Phenotyping/Global/' +
             'ALL_MICE/Source/')
@@ -9,6 +10,7 @@ TAG_DIR = ("/mnt/Storage2/Hallgrimsson/Automated_Phenotyping/Global/ALL_MICE" +
 
 MNC_DIR = ("/mnt/Storage2/Hallgrimsson/Automated_Phenotyping/Global/ALL_MICE" +
            '/Source/MNC')
+
 
 tag_files = os.listdir(TAG_DIR)
 mnc_files = os.listdir(MNC_DIR)
@@ -35,5 +37,18 @@ tag_num = np.delete(tag_num, np.where(tag_num == diff_files[0]))
 
 assert np.alltrue(tag_num == mnc_num)
 
-pp.package_to_npy(SKULL_DIR, mnc_files[:3], tag_files[:3], mnc_num[:3],
-                    )
+pp.package_to_npy(BASE_DIR, mnc_files[:3],
+                  tag_files[:3],
+                  mnc_num[:3],
+                  mnc_sub_folder='MNC/',
+                  tag_sub_folder='txt/',
+                  output_path='/home/kail/NewSkulls')
+
+
+img = nib.load(MNC_DIR+'/'+mnc_files[0])
+
+tag1 = pp.tag_parser(TAG_DIR+'/'+tag_files[0])
+
+test = pp.Image(img.get_data(), tag1)
+
+test.cube().scale
