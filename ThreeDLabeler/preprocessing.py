@@ -34,18 +34,18 @@ def package_to_npy(file_path: str,
     if mnc_sub_folder is None:
         pass
     else:
-        [mnc_sub_folder + file for file in mnc_files]
+        mnc_files = [mnc_sub_folder + file for file in mnc_files]
 
     if tag_sub_folder is None:
         pass
     else:
-        [tag_sub_folder + file for file in tag_files]
+        tag_files = [tag_sub_folder + file for file in tag_files]
 
     print('Starting image processing...')
     count = 0
     for i in tqdm(range(len(mnc_files))):
-        img = nib.load(f'{file_path}/{mnc_files[i]}')
-        tag = tag_parser(f'{file_path}/{tag_files[i]}')
+        img = nib.load(mnc_files[i])
+        tag = tag_parser(tag_files[i])
         im = Image(img.get_data(), tag, img.header.get_zooms())
         im.cube().scale(outputsize)
         pickle.dump(im, open(output_path+mnc_names[i]+'_pickle.p', 'wb'))
@@ -68,6 +68,7 @@ def tag_parser(file_path: str):
         t = f.read()
         t = t.split("Points =\n")[1]
         t = t.replace(" 0.1 1 1 \"Marker\"", "")
+        t = t.replace("0.2 1 1 Marker", "")  # Update the new file format
         t = t.replace(";", "")
         t = t.replace(" \n", "\n")
         t = t[1:]
