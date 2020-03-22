@@ -52,10 +52,9 @@ existing_files = np.array([i.replace('_pickle.p', '') for i in existing_files])
 mask = ~np.isin(mnc_files, existing_files)
 
 pp.package_to_pickle(BASE_DIR, mnc_files[mask],
-                  tag_files[mask],
-                  mnc_num[mask],
-                  mnc_sub_folder=MNC_DIR,
-                  tag_sub_folder=TAG_DIR,
-                  output_path='/home/kail/MouseSkullsCompressed/')
-
+                     tag_files[mask],
+                     mnc_num[mask],
+                     mnc_sub_folder=MNC_DIR,
+                     tag_sub_folder=TAG_DIR,
+                     output_path='/home/kail/MouseSkullsCompressed/')
 
