@@ -1,7 +1,6 @@
 from ThreeDLabeler import preprocessing as pp
 import os
 import numpy as np
-import nibabel as nib
 
 BASE_DIR = ('/home/kail/DataScienceProjects/skulls_new/')
 TAG_DIR = ('/home/kail/DataScienceProjects/3DLabeler/txt/')
@@ -45,7 +44,7 @@ assert np.setdiff1d(tag_num, mnc_num).shape == (0,)
 assert np.setdiff1d(mnc_num, tag_num).shape == (0,)
 assert np.alltrue(tag_num == mnc_num)
 
-tag_num = [i + '_lanrmarks.tag' for i in tag_num]
+tag_num = [i + '_landmarks.tag' for i in tag_num]
 mnc_num = [i + '.mnc' for i in mnc_num]
 
 pp.package_to_npy(BASE_DIR, mnc_files[23:],
@@ -56,10 +55,3 @@ pp.package_to_npy(BASE_DIR, mnc_files[23:],
                   output_path='/home/kail/MouseSkullsCompressed/')
 
 
-img = nib.load(MNC_DIR+'/'+mnc_files[0])
-
-tag1 = pp.tag_parser(TAG_DIR+'/'+tag_files[0])
-
-test = pp.Image(img.get_data(), tag1)
-
-test.cube().scale
