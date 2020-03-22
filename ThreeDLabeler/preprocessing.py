@@ -41,7 +41,6 @@ def package_to_pickle(file_path: str,
     else:
         tag_files = [tag_sub_folder + file for file in tag_files]
 
-    print('Starting image processing...\n')
     count = 0
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(mnc_files[i])

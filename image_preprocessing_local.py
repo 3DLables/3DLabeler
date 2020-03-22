@@ -51,7 +51,7 @@ existing_files = os.listdir('/home/kail/MouseSkullsCompressed')
 existing_files = np.array([i.replace('_pickle.p', '') for i in existing_files])
 mask = ~np.isin(mnc_files, existing_files)
 
-pp.package_to_npy(BASE_DIR, mnc_files[mask],
+pp.package_to_pickle(BASE_DIR, mnc_files[mask],
                   tag_files[mask],
                   mnc_num[mask],
                   mnc_sub_folder=MNC_DIR,
