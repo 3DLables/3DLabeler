@@ -26,7 +26,7 @@ tag_files = np.array(tag_files)
 diff_files = np.unique(np.union1d(np.setdiff1d(tag_num, mnc_num),
                                   np.setdiff1d(mnc_num, tag_num)))
 
-print('There are', diff_files.shape[0], 'files not in the same set')
+# print('There are', diff_files.shape[0], 'files not in the same set')
 
 # Remove all elements that are not in both folders.
 for i in diff_files:
@@ -57,4 +57,3 @@ pp.package_to_pickle(BASE_DIR, mnc_files[mask],
                      mnc_sub_folder=MNC_DIR,
                      tag_sub_folder=TAG_DIR,
                      output_path='/home/kail/MouseSkullsCompressed/')
-
