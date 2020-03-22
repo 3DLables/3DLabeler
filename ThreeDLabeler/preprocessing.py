@@ -6,14 +6,14 @@ from ThreeDLabeler.images import Image
 import pickle
 
 
-def package_to_npy(file_path: str,
-                   mnc_files: list,
-                   tag_files: list,
-                   mnc_names: list,
-                   outputsize=128,
-                   mnc_sub_folder=None,
-                   tag_sub_folder=None,
-                   output_path='./'):
+def package_to_pickle(file_path: str,
+                      mnc_files: list,
+                      tag_files: list,
+                      mnc_names: list,
+                      outputsize=128,
+                      mnc_sub_folder=None,
+                      tag_sub_folder=None,
+                      output_path='./'):
     """
     INPUT:  Path where raw image files exist,
             List of .mnc files,
@@ -41,7 +41,7 @@ def package_to_npy(file_path: str,
     else:
         tag_files = [tag_sub_folder + file for file in tag_files]
 
-    print('Starting image processing...')
+    print('Starting image processing...\n')
     count = 0
     for i in tqdm(range(len(mnc_files))):
         img = nib.load(mnc_files[i])
@@ -53,7 +53,7 @@ def package_to_npy(file_path: str,
         # np.save(f'{file_path}/{mnc_names[i]}.npy', npy_file)
         count += 1
 
-    print(f'{count} .mnc/.tag file pairs have been processed and ' +
+    print(f'\n{count} .mnc/.tag file pairs have been processed and ' +
           'saved as .npy files')
 
 
